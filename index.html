@@ -17,16 +17,57 @@
     </script>
     <div id="app">
         {{ message }}
+        <form @submit.prevent="login">
+            <div class="loginDiv">
+                <label for="email">Enter Email:</label>
+                <input type="text" name="email" id="email" placeholder="Enter Email" v-model="email">
+                <br/>
+                <label for="password">Enter Password:</label>
+                <input type="password" name="password" id="password" placeholder="Enter Password" v-model="password">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+        <ul v-if="notes">
+            <li v-for="note in notes">{{ note.title }}</li>
+        </ul>
     </div>
     <script type="module">
         // const vue = 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
-        import {createApp} from "vue";
+        import {createApp, ref, reactive} from "vue";
+
+        const host = "http://localhost:3001"
 
         createApp({
             setup: () => {
                 const message = "Hello World!";
+                const email = ref("");
+                const password = ref("");
+                const notes = ref(null);
+
+                const login = async () => {
+                    // console.log({email: email.value, password: password.value});
+                    const res = await fetch(`${host}/login`, {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({email: email.value, password: password.value})
+                    });
+                    const data = await res.json();
+                    console.log(data);
+                    if(!data.errors) {
+                        console.log("Success");
+                        const notesres = await fetch(`${host}/getNotes/`, {
+                            headers: {"Authorization": `Bearer ${data.jwt}`}
+                        })
+                        const notesf = await notesres.json();
+                        notes.value = notesf.notes;
+                        console.log(notesf);
+                        // notes.push(notesres.notes);
+                    }
+                
+                }
+
                 return {
-                    message
+                    message, login, email, password, notes
                 };
             }
         }).mount("#app");
