@@ -16,7 +16,6 @@
         }
     </script>
     <div id="app">
-        {{ message }}
         <!-- <form @submit.prevent="login">
             <div class="loginDiv">
                 <label for="email">Enter Email:</label>
@@ -28,22 +27,30 @@
             </div>
         </form> -->
         <login-component notes="notes"></login-component>
-        <ul v-if="notes">
-            <li v-for="note in notes">{{ note.title }}</li>
-        </ul>
+        <notes-view></notes-view>
+        
     </div>
     <script type="module">
         // const vue = 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
         import LoginComponent from "./LoginComponent.js";
+        import NotesView from "./NotesView.js";
         import {createApp, ref, reactive} from "vue";
 
         const host = "http://localhost:3001";
+
+        const routes = [
+            {path: "/", component: LoginComponent, alias: "/login"},
+            {path: "/notes", component: NotesView}
+        ]
 
         createApp({
             setup: () => {
                 
             }
-        }).component("LoginComponent", LoginComponent).mount("#app");
+        })
+        .component("LoginComponent", LoginComponent)
+        .component("NotesView", NotesView)
+        .mount("#app");
     </script>
 </body>
 </html>

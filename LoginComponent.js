@@ -21,11 +21,12 @@ export default {
             console.log(data);
             if(!data.errors) {
                 console.log("Success");
+                sessionStorage.setItem("user", data.jwt);
                 const notesres = await fetch(`${host}/getNotes/`, {
                     headers: {"Authorization": `Bearer ${data.jwt}`}
                 })
                 const notesf = await notesres.json();
-                props.notes = notesf.notes;
+                // props.notes = notesf.notes;
                 // notes.value = notesf.notes;
                 console.log(notesf);
                 // notes.push(notesres.notes);
